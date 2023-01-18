@@ -139,11 +139,11 @@ Snazzy is powered by React Native's `StyleSheet` API by default. If you'd like t
 import { SnazzyBackend } from '@waveplay/snazzy/backend'
 
 class CustomBackend implements SnazzyBackend {
-  create(styles: SnazzyStyles): SnazzyStyle {
+  create<T>(style: T): T {
     // ...
   }
 
-  merge(...styles: SnazzyStyle[]): SnazzyStyle {
+  merge<T>(...styles: T[]): T {
     // ...
   }
 }
@@ -163,10 +163,10 @@ export default snazz
 Don't forget to also export individual function bindings to keep the same import syntax:
 
 ```ts
-export const css = snazz.css.bind(snazz)
-export const cssRaw = snazz.cssRaw.bind(snazz)
-export const merge = snazz.merge.bind(snazz)
-export const sheet = snazz.sheet.bind(snazz)
+export const css = snazz.css
+export const cssRaw = snazz.cssRaw
+export const merge = snazz.merge
+export const sheet = snazz.sheet
 ```
 
 ## Transformers

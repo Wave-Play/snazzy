@@ -10,7 +10,7 @@ const snazzy = new Snazzy({
 
 export * from './core'
 export default snazzy
-export const css = snazzy.css.bind(snazzy)
-export const cssRaw = snazzy.cssRaw.bind(snazzy)
-export const merge = snazzy.merge.bind(snazzy)
-export const sheet = snazzy.sheet.bind(snazzy)
+export const css = snazzy.css
+export const cssRaw = snazzy.cssRaw
+export const merge = snazzy.merge
+export const sheet = snazzy.sheet
