@@ -2,7 +2,7 @@
  * © 2023 WavePlay <dev@waveplay.com>
  */
 import { Snazzy } from './core'
-import DefaultBackend from './backend/default'
+import { DefaultBackend } from './backend/default'
 
 const snazzy = new Snazzy({
 	backend: new DefaultBackend()
