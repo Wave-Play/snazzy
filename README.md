@@ -22,24 +22,24 @@ Instead of using `StyleSheet.create()`, use `sheet()` to create your styles:
 import { sheet } from '@waveplay/snazzy'
 
 const styles = sheet({
-  container: {
-    flex: 1,
-    backgroundColor: 'white'
-  }
+	container: {
+		flex: 1,
+		backgroundColor: 'white'
+	}
 })
 
 // Alternatively, you can use the default export
 import snazzy from '@waveplay/snazzy'
 
 const styles = snazzy.sheet({
-  // ...
+	// ...
 })
 ```
 
 You can now use destructuring to access your styles:
 
 ```tsx
-<View {...styles.container}/>
+<View {...styles.container} />
 ```
 
 See the [sample project](https://github.com/Wave-Play/snazzy/tree/master/example) for more usage examples.
@@ -52,15 +52,15 @@ If you'd like to create individual styles, you can use `css()`:
 import { css } from '@waveplay/snazzy'
 
 const containerStyle = css({
-  flex: 1,
-  backgroundColor: 'white'
+	flex: 1,
+	backgroundColor: 'white'
 })
 ```
 
 ... and use it like this:
 
 ```tsx
-<View {...containerStyle}/>
+<View {...containerStyle} />
 ```
 
 This is useful for creating styles as functions:
@@ -68,16 +68,17 @@ This is useful for creating styles as functions:
 ```ts
 import { css } from '@waveplay/snazzy'
 
-const containerStyle = (color) => css({
-  flex: 1,
-  backgroundColor: color
-})
+const containerStyle = (color) =>
+	css({
+		flex: 1,
+		backgroundColor: color
+	})
 ```
 
 ... and use it like this:
 
 ```tsx
-<View {...containerStyle('white')}/>
+<View {...containerStyle('white')} />
 ```
 
 ## Merge styles
@@ -88,12 +89,12 @@ You can merge styles using the `merge()` function:
 import { css, merge } from '@waveplay/snazzy'
 
 const containerStyle = css({
-  flex: 1,
-  backgroundColor: 'white'
+	flex: 1,
+	backgroundColor: 'white'
 })
 
 const textStyle = css({
-  color: 'black'
+	color: 'black'
 })
 
 const mergedStyle = merge(containerStyle, textStyle)
@@ -107,15 +108,15 @@ Sometimes you may need to use raw style objects. You can use `cssRaw()` instead 
 import { cssRaw } from '@waveplay/snazzy'
 
 const containerStyle = cssRaw({
-  flex: 1,
-  backgroundColor: 'white'
+	flex: 1,
+	backgroundColor: 'white'
 })
 ```
 
 This is useful for keeping the same syntax but making it compatible with more elements such as HTML:
 
 ```tsx
-<div {...containerStyle}/>
+<div {...containerStyle} />
 ```
 
 ## Conditional raw styles
@@ -123,12 +124,15 @@ This is useful for keeping the same syntax but making it compatible with more el
 Alternatively, you can pass a `raw` option to `css()`. The value can be a `boolean`, `'native'`, or `'web'`:
 
 ```ts
-const containerStyle = css({
-  flex: 1,
-  backgroundColor: 'white'
-}, {
-  raw: 'web' // This will be a raw style object on web, but a style object on native
-})
+const containerStyle = css(
+	{
+		flex: 1,
+		backgroundColor: 'white'
+	},
+	{
+		raw: 'web' // This will be a raw style object on web, but a style object on native
+	}
+)
 ```
 
 ## Custom backends
@@ -139,13 +143,13 @@ Snazzy is powered by React Native's `StyleSheet` API by default. If you'd like t
 import { SnazzyBackend } from '@waveplay/snazzy/backend'
 
 class CustomBackend implements SnazzyBackend {
-  create<T>(style: T): T {
-    // ...
-  }
+	create<T>(style: T): T {
+		// ...
+	}
 
-  merge<T>(...styles: T[]): T {
-    // ...
-  }
+	merge<T>(...styles: T[]): T {
+		// ...
+	}
 }
 ```
 
@@ -155,7 +159,7 @@ You can then create a new instance of Snazzy with your custom backend:
 import { Snazzy } from '@waveplay/snazzy/core'
 
 const snazz = new Snazzy({
-  backend: new CustomBackend()
+	backend: new CustomBackend()
 })
 export default snazz
 ```
@@ -163,10 +167,10 @@ export default snazz
 Don't forget to also export individual function bindings to keep the same import syntax:
 
 ```ts
-export const css = snazz.css
-export const cssRaw = snazz.cssRaw
-export const merge = snazz.merge
-export const sheet = snazz.sheet
+export const css: typeof snazz.css = snazz.css.bind(snazz)
+export const cssRaw: typeof snazz.cssRaw = snazz.cssRaw.bind(snazz)
+export const merge: typeof snazz.merge = snazz.merge.bind(snazz)
+export const sheet: typeof snazz.sheet = snazz.sheet.bind(snazz)
 ```
 
 ## Transformers
@@ -180,16 +184,16 @@ import type { SnazzyOptions, StyleType } from '@waveplay/snazzy/backend'
 
 // This transformer will change the background color of the style to pink if the id is 'title'
 const exampleTransformer = <T extends StyleType>(style: T, options: SnazzyOptions) => {
-  if (options?.id === 'title') {
-    style.backgroundColor = 'pink'
-  }
+	if (options?.id === 'title') {
+		style.backgroundColor = 'pink'
+	}
 
-  return style
+	return style
 }
 
 const snazz = new Snazzy({
-  backend: new DefaultBackend(),
-  transformers: [ exampleTransformer ]
+	backend: new DefaultBackend(),
+	transformers: [exampleTransformer]
 })
 ```
 
@@ -203,7 +207,7 @@ This may be considered unnecessary overhead if you're creating new instances of 
 import { Snazzy } from '@waveplay/snazzy/core'
 
 const snazzy = new Snazzy({
-  // ... your custom options
+	// ... your custom options
 })
 ```
 
