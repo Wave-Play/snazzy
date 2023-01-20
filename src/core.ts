@@ -45,12 +45,17 @@ export class Snazzy {
 
 		// Create a single style object
 		return {
-			style: (this._backend.create<T>({
-				style: this._transform(style, options)
-			} as T, {
-				...(options ?? {}),
-				isNative: IS_NATIVE
-			}) as any).style
+			style: (
+				this._backend.create<T>(
+					{
+						style: this._transform(style, options)
+					} as T,
+					{
+						...(options ?? {}),
+						isNative: IS_NATIVE
+					}
+				) as any
+			).style
 		}
 	}
 
@@ -60,9 +65,7 @@ export class Snazzy {
 
 	public merge<T = StyleType>(...snazzyStyles: SnazzyStyle<T>[]): SnazzyStyle<T> {
 		return {
-			style: this._backend.merge(
-				...snazzyStyles.map((snazzyStyle) => snazzyStyle.style) as T[]
-			)
+			style: this._backend.merge(...(snazzyStyles.map((snazzyStyle) => snazzyStyle.style) as T[]))
 		}
 	}
 
@@ -87,8 +90,14 @@ export class Snazzy {
 	}
 
 	public sheetRaw(styles: RawSheet): SnazzySheet {
-		return Object.keys(styles).reduce((acc, key) => {
-			acc[key] = this.cssRaw(styles[key])
+		// Transform each style
+		const transformedStyles = Object.keys(styles).reduce((acc, key) => {
+			acc[key] = this._transform(styles[key], {})
+			return acc
+		}, {})
+
+		return Object.keys(transformedStyles).reduce((acc, key) => {
+			acc[key] = this.cssRaw(transformedStyles[key])
 			return acc
 		}, {} as SnazzySheet)
 	}
