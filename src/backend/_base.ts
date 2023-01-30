@@ -1,13 +1,17 @@
 /**
  * © 2023 WavePlay <dev@waveplay.com>
  */
-import type { ImageStyle, TextStyle, ViewStyle } from 'react-native'
+import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native'
 
 export type StyleType = ViewStyle | TextStyle | ImageStyle
 
+export type RawSheet<T> = {
+	[Property in keyof T]: StyleProp<StyleType>
+}
+
 export interface SnazzyBackend {
-	create: <T extends StyleType>(style: T, options: SnazzyOptionsBackend) => T
-	merge: <T extends StyleType>(...styles: T[]) => T
+	create: <T extends Record<string, unknown>>(style: T, options: SnazzyOptionsBackend) => RawSheet<T>
+	merge: <T extends StyleType>(...styles: StyleProp<T>[]) => StyleProp<T>
 }
 
 export interface SnazzyOptions {

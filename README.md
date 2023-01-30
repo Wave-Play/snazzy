@@ -141,13 +141,15 @@ Snazzy is powered by React Native's `StyleSheet` API by default. If you'd like t
 
 ```ts
 import { SnazzyBackend } from '@waveplay/snazzy/backend'
+import type { StyleProp } from 'react-native'
+import type { RawSheet, SnazzyOptionsBackend, StyleType } from '@waveplay/snazzy/backend'
 
 class CustomBackend implements SnazzyBackend {
-	create<T>(style: T): T {
+	create<T extends Record<string, unknown>>(style: T, options: SnazzyOptionsBackend): RawSheet<T> {
 		// ...
 	}
 
-	merge<T>(...styles: T[]): T {
+	merge<T extends StyleType>(...styles: StyleProp<T>[]): StyleProp<T> {
 		// ...
 	}
 }

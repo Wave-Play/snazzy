@@ -2,23 +2,22 @@
  * © 2023 WavePlay <dev@waveplay.com>
  */
 import { Platform } from 'react-native'
+import type { StyleProp } from 'react-native'
 import type { SnazzyBackend, SnazzyOptions, StyleType } from './backend/_base'
 
 const IS_NATIVE = Platform.OS === 'ios' || Platform.OS === 'android'
-
-type RawSheet = { [key: string]: StyleType }
 
 interface SnazzyInitOptions {
 	backend?: SnazzyBackend
 	transformers?: SnazzyTransformer[]
 }
 
-export interface SnazzySheet {
-	[key: string]: SnazzyStyle<StyleType>
+export type SnazzySheet<T> = {
+	[Property in keyof T]: SnazzyStyle<StyleType>
 }
 
 export interface SnazzyStyle<T> {
-	style: T | Array<T>
+	style: StyleProp<T>
 }
 
 export interface SnazzyTransformer {
@@ -34,7 +33,7 @@ export class Snazzy {
 		this._transformers = options.transformers ?? []
 	}
 
-	public css<T = StyleType>(style: T, options?: SnazzyOptions): SnazzyStyle<T> {
+	public css<T = StyleType>(style: T, options?: SnazzyOptions): SnazzyStyle<StyleType> {
 		const { raw } = options ?? {}
 
 		// If marked as raw, return as plain style object (don't run through the backend)
@@ -45,16 +44,14 @@ export class Snazzy {
 
 		// Create a single style object
 		return {
-			style: (
-				this._backend.create<T>(
-					{
-						style: this._transform(style, options)
-					} as T,
-					{
-						...(options ?? {}),
-						isNative: IS_NATIVE
-					}
-				) as any
+			style: this._backend.create(
+				{
+					style: this._transform(style, options)
+				},
+				{
+					...(options ?? {}),
+					isNative: IS_NATIVE
+				}
 			).style
 		}
 	}
@@ -69,12 +66,15 @@ export class Snazzy {
 		}
 	}
 
-	public sheet<T>(styles: T | RawSheet, options?: SnazzyOptions): T {
+	public sheet<Value extends StyleType, T extends Record<string, Value>>(styles: T, options?: SnazzyOptions): SnazzySheet<T> {
+		// These keys are used to transform and create Snazzy syntax
+		const keys = Object.keys(styles) as (keyof T)[]
+
 		// Transform each style
-		const transformedStyles = Object.keys(styles).reduce((acc, key) => {
+		const transformedStyles = keys.reduce((acc, key) => {
 			acc[key] = this._transform(styles[key], options)
 			return acc
-		}, {})
+		}, {} as Record<keyof T, StyleType>)
 
 		// Run through the backend to create a sheet
 		const sheet = this._backend.create(transformedStyles, {
@@ -83,23 +83,26 @@ export class Snazzy {
 		})
 
 		// Convert the sheet to a SnazzySheet for snazzy syntax!
-		return Object.keys(sheet).reduce((acc, key) => {
+		return keys.reduce((acc, key) => {
 			acc[key] = { style: sheet[key] }
 			return acc
-		}, {} as T)
+		}, {} as SnazzySheet<T>)
 	}
 
-	public sheetRaw(styles: RawSheet): SnazzySheet {
+	public sheetRaw<Value extends StyleType, T extends Record<string, Value>>(styles: T): SnazzySheet<T> {
+		// These keys are used to transform and create Snazzy syntax
+		const keys = Object.keys(styles) as (keyof T)[]
+
 		// Transform each style
-		const transformedStyles = Object.keys(styles).reduce((acc, key) => {
+		const transformedStyles = keys.reduce((acc, key) => {
 			acc[key] = this._transform(styles[key], {})
 			return acc
-		}, {})
+		}, {} as Record<keyof T, StyleType>)
 
-		return Object.keys(transformedStyles).reduce((acc, key) => {
+		return keys.reduce((acc, key) => {
 			acc[key] = this.cssRaw(transformedStyles[key])
 			return acc
-		}, {} as SnazzySheet)
+		}, {} as SnazzySheet<T>)
 	}
 
 	private _transform<T>(style: T, options: SnazzyOptions): T {
